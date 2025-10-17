@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
+import { motion } from "motion/react"
 import { useTheme } from "next-themes";
 import { spells } from "@/data/all_spells";
 import { FunnelIcon } from "@heroicons/react/24/outline";
@@ -12,8 +13,8 @@ export default function Home() {
   const [nameFilter, setNameFilter] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [spellListFilter, setSpellListFilter] = useState("");
-  const [ritualFilter, setRitualFilter] = useState("");
-  const [concentrationFilter, setConcentrationFilter] = useState("");
+  const [ritualFilter, setRitualFilter] = useState(0);
+  const [concentrationFilter, setConcentrationFilter] = useState(0);
   const [schoolFilter, setSchoolFilter] = useState("");
   const [castingTimeFilter, setCastingTimeFilter] = useState("");
   const [componentsFilter, setComponentsFilter] = useState({
@@ -23,6 +24,7 @@ export default function Home() {
     $: 0,
   });
   const [showFilters, setShowFilters] = useState(false);
+
 
   const classes = ["Artificer", "Bard", "Cleric", "Druid", "Paladin", "Ranger", "Sorcerer", "Warlock", "Wizard"];
   const schools = ["Abjuration", "Conjuration", "Divination", "Enchantment", "Evocation", "Illusion", "Necromancy", "Transmutation"];
@@ -47,21 +49,6 @@ export default function Home() {
     [...new Set(spells.map((spell) => spell.details.level.toLowerCase()))], []
   );
 
-  // const uniqueDuration = useMemo(() =>
-  //   [...new Set(spells.map((spell) => spell.details.duration.toLowerCase()))], []
-  // );
-
-  // const uniqueRange = useMemo(() =>
-  //   [...new Set(spells.map((spell) => spell.details.range.toLowerCase()))], []
-  // )
-
-  // const uniqueSchool = useMemo(() =>
-  //   [...new Set(spells.map((spell) => spell.details.school.toLowerCase()))], []
-  // )
-
-  // const uniqueCastingTime = useMemo(() =>
-  //   [...new Set(spells.map((spell) => spell.details.castingTime.toLowerCase()))], [])
-
 
   const filteredSpells = useMemo(() => {
     return spells.filter((spell) => {
@@ -76,12 +63,17 @@ export default function Home() {
       const spellListMatches =
         !spellListFilter ||
         details.spellList.toLowerCase().includes(spellListFilter.toLowerCase());
-      const ritualMatches =
-        !ritualFilter ||
-        details.school.toLowerCase().includes(ritualFilter.toLowerCase());
-      const concentrationMatches =
-        !concentrationFilter ||
-        details.duration.toLowerCase().includes(concentrationFilter.toLowerCase());
+      const ritualStr = details.school?.toLowerCase?.() || details.school.toLowerCase() || "";
+      const durationStr = details.duration.toLowerCase();
+
+      let ritualMatches = true;
+      if (ritualFilter === 1 && !ritualStr.includes("ritual")) ritualMatches = false;
+      if (ritualFilter === -1 && ritualStr.includes("ritual")) ritualMatches = false;
+
+      let concentrationMatches = true;
+      if (concentrationFilter === 1 && !durationStr.includes("concentration")) concentrationMatches = false;
+      if (concentrationFilter === -1 && durationStr.includes("concentration")) concentrationMatches = false;
+
       const schoolMatches =
         !schoolFilter ||
         details.school.toLowerCase().includes(schoolFilter.toLowerCase());
@@ -140,406 +132,426 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  console.log("all spells", spells);
-
   return (
-    <div className="grid grid-rows-[5px_1fr_20px] items-start justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 h-[60px] bg-[var(--background)] border-b border-[var(--card-border)] flex items-center justify-center px-4 gap-4 z-10">
-        <button
-          className="border-2 rounded-sm p-2 bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          {mounted ? (
-            theme === "dark" ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />
-          ) : (
-            <div className="w-5 h-5"></div> // Placeholder while not mounted
-          )}
-        </button>
+    <>
+      <div className="grid grid-rows-[5px_1fr_20px] items-start justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        {/* Navigation Bar */}
+        <nav className="fixed top-0 left-0 right-0 h-[60px] bg-[var(--background)] border-b border-[var(--card-border)] flex items-center justify-center px-4 gap-4 z-10">
+          <div className="relative">
 
-        <div className="flex-1 max-w-xl">
-          <input
-            id="nameFilter"
-            type="text"
-            value={nameFilter}
-            onChange={(e) => setNameFilter(e.target.value)}
-            placeholder="Search spells..."
-            className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-          />
-        </div>
+            <button
+              className="border-2 rounded-sm p-2 bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {mounted ? (
+                theme === "dark" ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />
+              ) : (
+                <div className="w-5 h-5"></div> // Placeholder while not mounted
+              )}
+            </button></div>
 
-        <button
-          className="border-2 rounded-sm p-2 bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-          onClick={showFilters === true ? () => setShowFilters(false) : () => setShowFilters(true)}
-        >
-          <FunnelIcon className="w-5 h-5" />
-        </button>
-      </nav>
+          <div className="flex-1 max-w-xl">
+            <input
+              id="nameFilter"
+              type="text"
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              placeholder="Search spells..."
+              className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+            />
+          </div>
 
-      <main className="flex flex-col gap-8 mt-[60px]">
-        <div>
-          {showFilters && (
-            <div className="fixed top-0 right-0 h-full w-full bg-[var(--background)] shadow-lg z-40 overflow-y-auto transition-transform duration-300">
-              <div className="p-2 flex justify-between items-center border-b border-[var(--card-border)]">
-                <h2 className="text-lg font-bold text-[var(--text-primary)]">Filters</h2>
-                <button onClick={() => setShowFilters(false)} className="border-2 rounded-sm p-2 z-100 bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]">
-                  Close
-                </button>
-              </div>
-              <div className="p-4 space-y-6">
-                <div className="justify-center">
-                  {/* Responsive grid for filter controls */}
-                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <button
+            className="border-2 rounded-sm p-2 bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+            onClick={showFilters === true ? () => setShowFilters(false) : () => setShowFilters(true)}
+          >
+            <FunnelIcon className="w-5 h-5" />
+          </button>
+        </nav>
 
-                    {/* Spell List Filter */}
-                    <div>
-                      <label htmlFor="spellListFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
-                        Spell List:
-                      </label>
-                      <select
-                        id="spellListFilter"
-                        value={spellListFilter}
-                        onChange={(e) => setSpellListFilter(e.target.value)}
-                        className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                      >
-                        <option value="">All Spell Lists</option>
-                        {classes.map((sl, index) => (
-                          <option key={index} value={sl} className="bg-[var(--background)] text-[var(--text-primary)]">
-                            {sl}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+        <main className="flex flex-col gap-8 mt-[60px]">
+          <div>
+            {showFilters && (
+              <div className="fixed top-0 right-0 h-full w-full bg-[var(--background)] shadow-lg z-40 overflow-y-auto transition-transform duration-300">
+                <div className="p-2 flex justify-between items-center border-b border-[var(--card-border)]">
+                  <h2 className="text-lg font-bold text-[var(--text-primary)]">Filters</h2>
+                  <button onClick={() => setShowFilters(false)} className="border-2 rounded-sm p-2 z-100 bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]">
+                    Close
+                  </button>
+                </div>
+                <div className="p-4 space-y-6">
+                  <div className="justify-center">
+                    {/* Responsive grid for filter controls */}
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 
-                    {/* Level Filter */}
-                    <div>
-                      <label htmlFor="levelFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
-                        Level:
-                      </label>
-                      <select
-                        id="levelFilter"
-                        value={levelFilter}
-                        onChange={(e) => setLevelFilter(e.target.value)}
-                        className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                      >
-                        <option value="">All Levels</option>
-                        {uniqueLevels.map((lvl, index) => (
-                          <option key={index} value={lvl} className="bg-[var(--background)] text-[var(--text-primary)]">
-                            {lvl}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {/* Spell List Filter */}
+                      <div>
+                        <label htmlFor="spellListFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                          Spell List:
+                        </label>
+                        <select
+                          id="spellListFilter"
+                          value={spellListFilter}
+                          onChange={(e) => setSpellListFilter(e.target.value)}
+                          className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                        >
+                          <option value="">All Spell Lists</option>
+                          {classes.map((sl, index) => (
+                            <option key={index} value={sl} className="bg-[var(--background)] text-[var(--text-primary)]">
+                              {sl}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    {/* School Filter */}
-                    <div>
-                      <label htmlFor="schoolFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
-                        School:
-                      </label>
-                      <select
-                        id="schoolFilter"
-                        value={schoolFilter}
-                        onChange={(e) => setSchoolFilter(e.target.value)}
-                        className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                      >
-                        <option value="">All Schools</option>
-                        {schools.map((school, index) => (
-                          <option key={index} value={school} className="bg-[var(--background)] text-[var(--text-primary)]">
-                            {school}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {/* Level Filter */}
+                      <div>
+                        <label htmlFor="levelFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                          Level:
+                        </label>
+                        <select
+                          id="levelFilter"
+                          value={levelFilter}
+                          onChange={(e) => setLevelFilter(e.target.value)}
+                          className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                        >
+                          <option value="">All Levels</option>
+                          {uniqueLevels.map((lvl, index) => (
+                            <option key={index} value={lvl} className="bg-[var(--background)] text-[var(--text-primary)]">
+                              {lvl}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    {/* Casting Time Filter */}
-                    <div>
-                      <label htmlFor="castingTimeFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
-                        Casting Time:
-                      </label>
-                      <select
-                        id="castingTimeFilter"
-                        value={castingTimeFilter}
-                        onChange={(e) => setCastingTimeFilter(e.target.value)}
-                        className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                      >
-                        <option value="">All Casting Times</option>
-                        {castingTimes.map((castTime, index) => (
-                          <option key={index} value={castTime} className="bg-[var(--background)] text-[var(--text-primary)]">
-                            {castTime}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {/* School Filter */}
+                      <div>
+                        <label htmlFor="schoolFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                          School:
+                        </label>
+                        <select
+                          id="schoolFilter"
+                          value={schoolFilter}
+                          onChange={(e) => setSchoolFilter(e.target.value)}
+                          className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                        >
+                          <option value="">All Schools</option>
+                          {schools.map((school, index) => (
+                            <option key={index} value={school} className="bg-[var(--background)] text-[var(--text-primary)]">
+                              {school}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    {/* Components Filter */}
-                    <div>
-                      <label className="block text-sm font-medium mb-1 text-[var(--text-primary)]">Components:</label>
-                      <div className="flex gap-2">
+                      {/* Casting Time Filter */}
+                      <div>
+                        <label htmlFor="castingTimeFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                          Casting Time:
+                        </label>
+                        <select
+                          id="castingTimeFilter"
+                          value={castingTimeFilter}
+                          onChange={(e) => setCastingTimeFilter(e.target.value)}
+                          className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                        >
+                          <option value="">All Casting Times</option>
+                          {castingTimes.map((castTime, index) => (
+                            <option key={index} value={castTime} className="bg-[var(--background)] text-[var(--text-primary)]">
+                              {castTime}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                        {(["V", "S", "M", "gp"] as Array<"V" | "S" | "M" | "gp">).map((comp) => {
-                          const key: "V" | "S" | "M" | "$" = comp === "gp" ? "$" : comp;
-                          return (
-                            <button
-                              key={comp}
-                              onClick={() => toggleComponentFilter(comp)}
-                              className={`border rounded-lg p-2 flex-1 transition-colors ${componentsFilter[key] === 1
-                                ? "bg-green-700 text-white"
-                                : componentsFilter[key] === -1
-                                  ? "bg-black-900 text-gray"
-                                  : "bg-[var(--tag-background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                                }`}
-                            >
-                              {labelMap[comp]}{" "}
-                              {componentsFilter[key] === 1
-                                ? "(included)"
-                                : componentsFilter[key] === -1
-                                  ? "(excluded)"
-                                  : ""}
-                            </button>
-                          );
-                        })}
+                      {/* Components Filter */}
+                      <div>
+                        <label className="block text-sm font-medium mb-1 text-[var(--text-primary)]">Components:</label>
+                        <div className="flex gap-2">
+
+                          {(["V", "S", "M", "gp"] as Array<"V" | "S" | "M" | "gp">).map((comp) => {
+                            const key: "V" | "S" | "M" | "$" = comp === "gp" ? "$" : comp;
+                            return (
+                              <button
+                                key={comp}
+                                onClick={() => toggleComponentFilter(comp)}
+                                className={`border rounded-lg p-2 flex-1 transition-colors ${componentsFilter[key] === 1
+                                  ? "bg-green-700 text-white"
+                                  : componentsFilter[key] === -1
+                                    ? "bg-black-900 text-gray"
+                                    : "bg-[var(--tag-background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                                  }`}
+                              >
+                                {labelMap[comp]}{" "}
+                                {componentsFilter[key] === 1
+                                  ? "(included)"
+                                  : componentsFilter[key] === -1
+                                    ? "(excluded)"
+                                    : ""}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div></div>
+
+                      {/* Ritual Button */}
+                      <div className="flex items-end">
+                        <button
+                          className={`border-2 rounded-lg p-2 w-full transition-colors ${ritualFilter === 1
+                            ? "bg-green-700 text-white"
+                            : ritualFilter === -1
+                              ? "bg-red-700 text-white"
+                              : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                            }`}
+                          onClick={() =>
+                            setRitualFilter((prev) => (prev === 0 ? 1 : prev === 1 ? -1 : 0))
+                          }
+                        >
+                          Ritual{" "}
+                          {ritualFilter === 1
+                            ? "(included)"
+                            : ritualFilter === -1
+                              ? "(excluded)"
+                              : ""}
+                        </button>
+                      </div>
+
+                      {/* Concentration Button */}
+                      <div className="flex items-end">
+                        <button
+                          className={`border-2 rounded-lg p-2 w-full transition-colors ${concentrationFilter === 1
+                            ? "bg-green-700 text-white"
+                            : concentrationFilter === -1
+                              ? "bg-red-700 text-white"
+                              : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                            }`}
+                          onClick={() =>
+                            setConcentrationFilter((prev) => (prev === 0 ? 1 : prev === 1 ? -1 : 0))
+                          }
+                        >
+                          Concentration{" "}
+                          {concentrationFilter === 1
+                            ? "(included)"
+                            : concentrationFilter === -1
+                              ? "(excluded)"
+                              : ""}
+                        </button>
                       </div>
                     </div>
-                    <div></div>
 
-                    {/* Ritual Button */}
-                    <div className="flex items-end">
+                    {/* Clear Filters Button */}
+                    <div className="mt-4">
                       <button
-                        className={`border-2 rounded-lg p-2 w-full transition-colors ${ritualFilter === ""
-                          ? "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                          : "bg-[var(--tag-background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                          }`}
-                        onClick={() => setRitualFilter(ritualFilter ? "" : "ritual")}
+                        className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)] transition-colors hover:bg-[var(--tag-background)]"
+                        onClick={() => {
+                          setNameFilter("");
+                          setLevelFilter("");
+                          setSchoolFilter("");
+                          setCastingTimeFilter("");
+                          setSpellListFilter("");
+                          setConcentrationFilter(0);
+                          setRitualFilter(0);
+                          setComponentsFilter({
+                            V: 0,
+                            S: 0,
+                            M: 0,
+                            $: 0,
+                          });
+                        }}
                       >
-                        Ritual
+                        Clear Filters
                       </button>
                     </div>
-
-                    {/* Concentration Button */}
-                    <div className="flex items-end">
-                      <button
-                        className={`border-2 rounded-lg p-2 w-full transition-colors ${concentrationFilter === ""
-                          ? "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                          : "bg-[var(--tag-background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                          }`}
-                        onClick={() =>
-                          setConcentrationFilter(
-                            concentrationFilter ? "" : "concentration"
-                          )
-                        }
-                      >
-                        Concentration
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Clear Filters Button */}
-                  <div className="mt-4">
-                    <button
-                      className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)] transition-colors hover:bg-[var(--tag-background)]"
-                      onClick={() => {
-                        setNameFilter("");
-                        setLevelFilter("");
-                        setSchoolFilter("");
-                        setCastingTimeFilter("");
-                        setSpellListFilter("");
-                        setConcentrationFilter("");
-                        setRitualFilter("");
-                        setComponentsFilter({
-                          V: 0,
-                          S: 0,
-                          M: 0,
-                          $: 0,
-                        });
-                      }}
-                    >
-                      Clear Filters
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      </main>
-      <div className="flex flex-col gap-4 w-full max-w-5xl">
-        {/* Filter Summary Section */}
-        {(nameFilter || levelFilter || spellListFilter || ritualFilter ||
-          concentrationFilter || schoolFilter || castingTimeFilter ||
-          Object.values(componentsFilter).some(val => val !== 0)) && (
-            <div className="bg-[var(--tag-background)] border border-[var(--card-border)] rounded-lg p-3 text-sm text-[var(--text-secondary)]">
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="font-medium">Active Filters:</span>
-                {nameFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    Name: {nameFilter}
-                    <button
-                      onClick={() => setNameFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear name filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {levelFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    Level: {levelFilter}
-                    <button
-                      onClick={() => setLevelFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear level filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {spellListFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    Class: {spellListFilter}
-                    <button
-                      onClick={() => setSpellListFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear class filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {ritualFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    Ritual
-                    <button
-                      onClick={() => setRitualFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear ritual filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {concentrationFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    Concentration
-                    <button
-                      onClick={() => setConcentrationFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear concentration filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {schoolFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    School: {schoolFilter}
-                    <button
-                      onClick={() => setSchoolFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear school filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {castingTimeFilter && (
-                  <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                    Casting Time: {castingTimeFilter}
-                    <button
-                      onClick={() => setCastingTimeFilter("")}
-                      className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                      aria-label="Clear casting time filter"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {Object.entries(componentsFilter).map(([key, value]) => {
-                  if (value === 0) return null;
-                  const label = key === "$" ? "Cost" : key;
-                  return (
-                    <span key={key} className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                      {label}: {value === 1 ? "Required" : "Excluded"}
+            )}
+          </div>
+        </main>
+        <div className="flex flex-col gap-4 w-full max-w-5xl">
+          {/* Filter Summary Section */}
+          {(nameFilter || levelFilter || spellListFilter || ritualFilter ||
+            concentrationFilter || schoolFilter || castingTimeFilter ||
+            Object.values(componentsFilter).some(val => val !== 0)) && (
+              <div className="bg-[var(--tag-background)] border border-[var(--card-border)] rounded-lg p-3 text-sm text-[var(--text-secondary)]">
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="font-medium">Active Filters:</span>
+                  {nameFilter && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Name: {nameFilter}
                       <button
-                        onClick={() => {
-                          setComponentsFilter(prev => ({
-                            ...prev,
-                            [key]: 0
-                          }));
-                        }}
+                        onClick={() => setNameFilter("")}
                         className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                        aria-label={`Clear ${label} component filter`}
+                        aria-label="Clear name filter"
                       >
                         ×
                       </button>
                     </span>
-                  );
-                })}
-                <button
-                  onClick={() => {
-                    setNameFilter("");
-                    setLevelFilter("");
-                    setSchoolFilter("");
-                    setCastingTimeFilter("");
-                    setSpellListFilter("");
-                    setConcentrationFilter("");
-                    setRitualFilter("");
-                    setComponentsFilter({
-                      V: 0,
-                      S: 0,
-                      M: 0,
-                      $: 0,
-                    });
-                  }}
-                  className="ml-auto text-xs underline hover:text-[var(--text-primary)]"
-                >
-                  Clear All
-                </button>
-              </div>
-            </div>
-          )}
-        {filteredSpells.map((spell, index) => (
-          <div
-            key={index}
-            className="border border-[var(--card-border)] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-[var(--card-background)]"
-          >
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-semibold text-[var(--text-primary)]">{spell.name}</h3>
-              <div className="text-sm text-[var(--text-secondary)]">
-                {spell.details.level} {spell.details.school}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-[var(--text-secondary)] mb-3">
-              <div><span className="font-medium">Casting Time:</span> {spell.details.castingTime}</div>
-              <div><span className="font-medium">Range:</span> {spell.details.range}</div>
-              <div><span className="font-medium">Duration:</span> {spell.details.duration}</div>
-              <div><span className="font-medium">Components:</span> {spell.details.components}</div>
-            </div>
-
-            <div className="text-sm text-[var(--text-secondary)] mb-3">
-              <p>{spell.details.description}</p>
-            </div>
-
-            <div className="flex flex-wrap gap-2 text-xs">
-              <div className="bg-[var(--tag-background)] px-2 py-1 rounded">
-                <span className="font-medium">Classes:</span> {spell.details.spellList}
-              </div>
-              {spell.details.upcast && (
-                <div className="bg-[var(--tag-background)] px-2 py-1 rounded">
-                  <span className="font-medium">Upcast:</span> {spell.details.upcast}
+                  )}
+                  {levelFilter && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Level: {levelFilter}
+                      <button
+                        onClick={() => setLevelFilter("")}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear level filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {spellListFilter && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Class: {spellListFilter}
+                      <button
+                        onClick={() => setSpellListFilter("")}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear class filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {ritualFilter !== 0 && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Ritual: {ritualFilter === 1 ? "Included" : "Excluded"}
+                      <button
+                        onClick={() => setRitualFilter(0)}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear ritual filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {concentrationFilter !== 0 && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Concentration: {concentrationFilter === 1 ? "Included" : "Excluded"}
+                      <button
+                        onClick={() => setConcentrationFilter(0)}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear concentration filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {schoolFilter && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      School: {schoolFilter}
+                      <button
+                        onClick={() => setSchoolFilter("")}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear school filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {castingTimeFilter && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Casting Time: {castingTimeFilter}
+                      <button
+                        onClick={() => setCastingTimeFilter("")}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear casting time filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {Object.entries(componentsFilter).map(([key, value]) => {
+                    if (value === 0) return null;
+                    const label = key === "$" ? "Cost" : key;
+                    return (
+                      <span key={key} className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                        {label}: {value === 1 ? "Required" : "Excluded"}
+                        <button
+                          onClick={() => {
+                            setComponentsFilter(prev => ({
+                              ...prev,
+                              [key]: 0
+                            }));
+                          }}
+                          className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                          aria-label={`Clear ${label} component filter`}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                  <button
+                    onClick={() => {
+                      setNameFilter("");
+                      setLevelFilter("");
+                      setSchoolFilter("");
+                      setCastingTimeFilter("");
+                      setSpellListFilter("");
+                      setConcentrationFilter(0);
+                      setRitualFilter(0);
+                      setComponentsFilter({
+                        V: 0,
+                        S: 0,
+                        M: 0,
+                        $: 0,
+                      });
+                    }}
+                    className="ml-auto text-xs underline hover:text-[var(--text-primary)]"
+                  >
+                    Clear All
+                  </button>
                 </div>
-              )}
-              <div className="bg-[var(--tag-background)] px-2 py-1 rounded">
-                <span className="font-medium">Source:</span> {spell.details.source}
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
+            )}
+          {filteredSpells.map((spell, index) => (
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: 'tween' }}
+              key={index}
+              className="relative border border-[var(--card-border)] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-[var(--card-background)]"
+              id="spell-card"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">{spell.name}</h3>
+                <div className="text-sm text-[var(--text-secondary)]">
+                  {spell.details.level} {spell.details.school}
+                </div>
+              </div>
 
-      </footer>
-    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-[var(--text-secondary)] mb-3">
+                <div><span className="font-medium">Casting Time:</span> {spell.details.castingTime}</div>
+                <div><span className="font-medium">Components:</span> {spell.details.components}</div>
+                <div><span className="font-medium">Duration:</span> {spell.details.duration}</div>
+                <div><span className="font-medium">Range:</span> {spell.details.range}</div>
+                <div><span className="font-medium"></span> </div>
+              </div>
+
+              <div className="text-sm text-[var(--text-secondary)] mb-3">
+                <p>{spell.details.description}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-xs">
+                <div className="bg-[var(--tag-background)] px-2 py-1 rounded">
+                  <span className="font-medium">Classes:</span> {spell.details.spellList}
+                </div>
+                {spell.details.upcast && (
+                  <div className="bg-[var(--tag-background)] px-2 py-1 rounded">
+                    <span className="font-medium">Upcast:</span> {spell.details.upcast}
+                  </div>
+                )}
+                <div className="bg-[var(--tag-background)] px-2 py-1 rounded">
+                  <span className="font-medium">Source:</span> {spell.details.source}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
+
+        </footer>
+      </div>
+    </>
   );
 }
