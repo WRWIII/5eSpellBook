@@ -186,7 +186,7 @@ export default function Home() {
 
                       {/* Spell List Filter */}
                       <div>
-                        <label htmlFor="spellListFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                        <label htmlFor="spellListFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
                           Spell List:
                         </label>
                         <select
@@ -206,7 +206,7 @@ export default function Home() {
 
                       {/* Level Filter */}
                       <div>
-                        <label htmlFor="levelFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                        <label htmlFor="levelFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
                           Level:
                         </label>
                         <select
@@ -226,7 +226,7 @@ export default function Home() {
 
                       {/* School Filter */}
                       <div>
-                        <label htmlFor="schoolFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                        <label htmlFor="schoolFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
                           School:
                         </label>
                         <select
@@ -246,7 +246,7 @@ export default function Home() {
 
                       {/* Casting Time Filter */}
                       <div>
-                        <label htmlFor="castingTimeFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)]">
+                        <label htmlFor="castingTimeFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
                           Casting Time:
                         </label>
                         <select
@@ -266,7 +266,7 @@ export default function Home() {
 
                       {/* Components Filter */}
                       <div>
-                        <label className="block text-sm font-medium mb-1 text-[var(--text-primary)]">Components:</label>
+                        <label className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">Components:</label>
                         <div className="flex gap-2">
 
                           {(["V", "S", "M", "gp"] as Array<"V" | "S" | "M" | "gp">).map((comp) => {
@@ -510,12 +510,14 @@ export default function Home() {
               whileHover={{ scale: 1.03 }}
               transition={{ type: 'tween' }}
               key={index}
-              className="relative border border-[var(--card-border)] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-[var(--card-background)]"
+              className="relative border border-[var(--card-border)] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-[var(--card-background)] backdrop-blur-md"
               id="spell-card"
             >
               <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)]">{spell.name}</h3>
-                <div className="text-sm text-[var(--text-secondary)]">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)] tracking-tight">
+                  {spell.name}
+                </h3>
+                <div className="text-sm text-[var(--text-secondary)] font-medium tracking-tight">
                   {spell.details.level} {spell.details.school}
                 </div>
               </div>
