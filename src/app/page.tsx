@@ -13,6 +13,7 @@ export default function Home() {
   const [nameFilter, setNameFilter] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [spellListFilter, setSpellListFilter] = useState("");
+  const [classFilterMode, setClassFilterMode] = useState<"inclusive" | "exclusive">("inclusive");
   const [ritualFilter, setRitualFilter] = useState(0);
   const [concentrationFilter, setConcentrationFilter] = useState(0);
   const [schoolFilter, setSchoolFilter] = useState("");
@@ -60,9 +61,19 @@ export default function Home() {
       const levelMatches =
         !levelFilter ||
         details.level.toLowerCase() === levelFilter.toLowerCase();
-      const spellListMatches =
-        !spellListFilter ||
-        details.spellList.toLowerCase().includes(spellListFilter.toLowerCase());
+
+      // Class filtering with exclusive/inclusive modes
+      let spellListMatches = true;
+      if (spellListFilter) {
+        const classList = details.spellList.toLowerCase().split(',').map(c => c.trim());
+        if (classFilterMode === "exclusive") {
+          // Exclusive: spell must ONLY be available to the selected class
+          spellListMatches = classList.length === 1 && classList[0].includes(spellListFilter.toLowerCase());
+        } else {
+          // Inclusive: spell must be available to the selected class (default)
+          spellListMatches = details.spellList.toLowerCase().includes(spellListFilter.toLowerCase());
+        }
+      }
       const ritualStr = details.school?.toLowerCase?.() || details.school.toLowerCase() || "";
       const durationStr = details.duration.toLowerCase();
 
@@ -116,6 +127,7 @@ export default function Home() {
     nameFilter,
     levelFilter,
     spellListFilter,
+    classFilterMode,
     ritualFilter,
     concentrationFilter,
     schoolFilter,
@@ -184,29 +196,63 @@ export default function Home() {
                     {/* Responsive grid for filter controls */}
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 
-                      {/* Spell List Filter */}
-                      <div>
-                        <label htmlFor="spellListFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
-                          Spell List:
+                      {/* Spell List Filter with Exclusive/Inclusive Toggle */}
+                      <div className="sm:col-span-2">
+                        <label htmlFor="spellListFilter" className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">
+                          Class Filter:
                         </label>
-                        <select
-                          id="spellListFilter"
-                          value={spellListFilter}
-                          onChange={(e) => setSpellListFilter(e.target.value)}
-                          className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                        >
-                          <option value="">All Spell Lists</option>
-                          {classes.map((sl, index) => (
-                            <option key={index} value={sl} className="bg-[var(--background)] text-[var(--text-primary)]">
-                              {sl}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="space-y-2">
+                          <select
+                            id="spellListFilter"
+                            value={spellListFilter}
+                            onChange={(e) => setSpellListFilter(e.target.value)}
+                            className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                          >
+                            <option value="">All Classes</option>
+                            {classes.map((sl, index) => (
+                              <option key={index} value={sl} className="bg-[var(--background)] text-[var(--text-primary)]">
+                                {sl}
+                              </option>
+                            ))}
+                          </select>
+                          {spellListFilter && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setClassFilterMode("inclusive")}
+                                className={`flex-1 border rounded-lg p-2 text-sm transition-colors ${
+                                  classFilterMode === "inclusive"
+                                    ? "bg-blue-600 text-white border-blue-600"
+                                    : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                                }`}
+                              >
+                                Inclusive
+                              </button>
+                              <button
+                                onClick={() => setClassFilterMode("exclusive")}
+                                className={`flex-1 border rounded-lg p-2 text-sm transition-colors ${
+                                  classFilterMode === "exclusive"
+                                    ? "bg-purple-600 text-white border-purple-600"
+                                    : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                                }`}
+                              >
+                                Exclusive
+                              </button>
+                            </div>
+                          )}
+                          {spellListFilter && (
+                            <p className="text-xs text-[var(--text-secondary)] italic">
+                              {classFilterMode === "inclusive"
+                                ? `Showing spells available to ${spellListFilter} (may be shared with other classes)`
+                                : `Showing spells ONLY available to ${spellListFilter}`
+                              }
+                            </p>
+                          )}
+                        </div>
                       </div>
 
                       {/* Level Filter */}
                       <div>
-                        <label htmlFor="levelFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
+                        <label htmlFor="levelFilter" className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">
                           Level:
                         </label>
                         <select
@@ -218,7 +264,7 @@ export default function Home() {
                           <option value="">All Levels</option>
                           {uniqueLevels.map((lvl, index) => (
                             <option key={index} value={lvl} className="bg-[var(--background)] text-[var(--text-primary)]">
-                              {lvl}
+                              {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
                             </option>
                           ))}
                         </select>
@@ -226,7 +272,7 @@ export default function Home() {
 
                       {/* School Filter */}
                       <div>
-                        <label htmlFor="schoolFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
+                        <label htmlFor="schoolFilter" className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">
                           School:
                         </label>
                         <select
@@ -245,8 +291,8 @@ export default function Home() {
                       </div>
 
                       {/* Casting Time Filter */}
-                      <div>
-                        <label htmlFor="castingTimeFilter" className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">
+                      <div className="sm:col-span-2 md:col-span-1">
+                        <label htmlFor="castingTimeFilter" className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">
                           Casting Time:
                         </label>
                         <select
@@ -265,91 +311,87 @@ export default function Home() {
                       </div>
 
                       {/* Components Filter */}
-                      <div>
-                        <label className="block text-sm font-medium mb-1 text-[var(--text-primary)] tracking-tight">Components:</label>
-                        <div className="flex gap-2">
-
+                      <div className="sm:col-span-2 md:col-span-4">
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">Components:</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           {(["V", "S", "M", "gp"] as Array<"V" | "S" | "M" | "gp">).map((comp) => {
                             const key: "V" | "S" | "M" | "$" = comp === "gp" ? "$" : comp;
                             return (
                               <button
                                 key={comp}
                                 onClick={() => toggleComponentFilter(comp)}
-                                className={`border rounded-lg p-2 flex-1 transition-colors ${componentsFilter[key] === 1
-                                  ? "bg-green-700 text-white"
+                                className={`border rounded-lg p-2 text-sm transition-all ${componentsFilter[key] === 1
+                                  ? "bg-green-600 text-white border-green-600 font-semibold"
                                   : componentsFilter[key] === -1
-                                    ? "bg-black-900 text-gray"
+                                    ? "bg-red-600 text-white border-red-600 font-semibold"
                                     : "bg-[var(--tag-background)] text-[var(--text-primary)] border-[var(--card-border)]"
                                   }`}
                               >
-                                {labelMap[comp]}{" "}
-                                {componentsFilter[key] === 1
-                                  ? "(included)"
-                                  : componentsFilter[key] === -1
-                                    ? "(excluded)"
-                                    : ""}
+                                {labelMap[comp]}
+                                {componentsFilter[key] === 1 && " ✓"}
+                                {componentsFilter[key] === -1 && " ✗"}
                               </button>
                             );
                           })}
                         </div>
                       </div>
-                      <div></div>
 
                       {/* Ritual Button */}
-                      <div className="flex items-end">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">Ritual:</label>
                         <button
-                          className={`border-2 rounded-lg p-2 w-full transition-colors ${ritualFilter === 1
-                            ? "bg-green-700 text-white"
+                          className={`border rounded-lg p-2 w-full text-sm transition-all ${ritualFilter === 1
+                            ? "bg-green-600 text-white border-green-600 font-semibold"
                             : ritualFilter === -1
-                              ? "bg-red-700 text-white"
+                              ? "bg-red-600 text-white border-red-600 font-semibold"
                               : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
                             }`}
                           onClick={() =>
                             setRitualFilter((prev) => (prev === 0 ? 1 : prev === 1 ? -1 : 0))
                           }
                         >
-                          Ritual{" "}
                           {ritualFilter === 1
-                            ? "(included)"
+                            ? "Required ✓"
                             : ritualFilter === -1
-                              ? "(excluded)"
-                              : ""}
+                              ? "Excluded ✗"
+                              : "Any"}
                         </button>
                       </div>
 
                       {/* Concentration Button */}
-                      <div className="flex items-end">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">Concentration:</label>
                         <button
-                          className={`border-2 rounded-lg p-2 w-full transition-colors ${concentrationFilter === 1
-                            ? "bg-green-700 text-white"
+                          className={`border rounded-lg p-2 w-full text-sm transition-all ${concentrationFilter === 1
+                            ? "bg-green-600 text-white border-green-600 font-semibold"
                             : concentrationFilter === -1
-                              ? "bg-red-700 text-white"
+                              ? "bg-red-600 text-white border-red-600 font-semibold"
                               : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
                             }`}
                           onClick={() =>
                             setConcentrationFilter((prev) => (prev === 0 ? 1 : prev === 1 ? -1 : 0))
                           }
                         >
-                          Concentration{" "}
                           {concentrationFilter === 1
-                            ? "(included)"
+                            ? "Required ✓"
                             : concentrationFilter === -1
-                              ? "(excluded)"
-                              : ""}
+                              ? "Excluded ✗"
+                              : "Any"}
                         </button>
                       </div>
                     </div>
 
                     {/* Clear Filters Button */}
-                    <div className="mt-4">
+                    <div className="mt-6 pt-4 border-t border-[var(--card-border)]">
                       <button
-                        className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)] transition-colors hover:bg-[var(--tag-background)]"
+                        className="border-2 rounded-lg p-3 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)] transition-colors hover:bg-[var(--tag-background)] font-medium"
                         onClick={() => {
                           setNameFilter("");
                           setLevelFilter("");
                           setSchoolFilter("");
                           setCastingTimeFilter("");
                           setSpellListFilter("");
+                          setClassFilterMode("inclusive");
                           setConcentrationFilter(0);
                           setRitualFilter(0);
                           setComponentsFilter({
@@ -360,7 +402,7 @@ export default function Home() {
                           });
                         }}
                       >
-                        Clear Filters
+                        Clear All Filters
                       </button>
                     </div>
                   </div>
@@ -402,8 +444,12 @@ export default function Home() {
                     </span>
                   )}
                   {spellListFilter && (
-                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                      Class: {spellListFilter}
+                    <span className={`px-2 py-1 rounded border flex items-center gap-1 ${
+                      classFilterMode === "exclusive"
+                        ? "bg-purple-100 border-purple-400 dark:bg-purple-900/30 dark:border-purple-600"
+                        : "bg-blue-100 border-blue-400 dark:bg-blue-900/30 dark:border-blue-600"
+                    }`}>
+                      {classFilterMode === "exclusive" ? "🔒" : "📖"} {spellListFilter} ({classFilterMode})
                       <button
                         onClick={() => setSpellListFilter("")}
                         className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
@@ -489,6 +535,7 @@ export default function Home() {
                       setSchoolFilter("");
                       setCastingTimeFilter("");
                       setSpellListFilter("");
+                      setClassFilterMode("inclusive");
                       setConcentrationFilter(0);
                       setRitualFilter(0);
                       setComponentsFilter({
