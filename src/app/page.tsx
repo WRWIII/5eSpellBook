@@ -11,7 +11,7 @@ export default function Home() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [nameFilter, setNameFilter] = useState("");
-  const [levelFilter, setLevelFilter] = useState("");
+  const [levelFilters, setLevelFilters] = useState<string[]>([]);
   const [spellListFilter, setSpellListFilter] = useState("");
   const [classFilterMode, setClassFilterMode] = useState<"inclusive" | "exclusive">("inclusive");
   const [ritualFilter, setRitualFilter] = useState(0);
@@ -46,6 +46,14 @@ export default function Home() {
     }));
   };
 
+  const toggleLevelFilter = (level: string) => {
+    setLevelFilters(prev =>
+      prev.includes(level)
+        ? prev.filter(l => l !== level)
+        : [...prev, level]
+    );
+  };
+
   const uniqueLevels = useMemo(() =>
     [...new Set(spells.map((spell) => spell.details.level.toLowerCase()))], []
   );
@@ -59,8 +67,8 @@ export default function Home() {
         !nameFilter ||
         name.toLowerCase().includes(nameFilter.toLowerCase());
       const levelMatches =
-        !levelFilter ||
-        details.level.toLowerCase() === levelFilter.toLowerCase();
+        levelFilters.length === 0 ||
+        levelFilters.includes(details.level.toLowerCase());
 
       // Class filtering with exclusive/inclusive modes
       let spellListMatches = true;
@@ -125,7 +133,7 @@ export default function Home() {
     });
   }, [
     nameFilter,
-    levelFilter,
+    levelFilters,
     spellListFilter,
     classFilterMode,
     ritualFilter,
@@ -251,23 +259,25 @@ export default function Home() {
                       </div>
 
                       {/* Level Filter */}
-                      <div>
-                        <label htmlFor="levelFilter" className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">
+                      <div className="sm:col-span-2 lg:col-span-4">
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">
                           Level:
                         </label>
-                        <select
-                          id="levelFilter"
-                          value={levelFilter}
-                          onChange={(e) => setLevelFilter(e.target.value)}
-                          className="border rounded-lg p-2 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                        >
-                          <option value="">All Levels</option>
-                          {uniqueLevels.map((lvl, index) => (
-                            <option key={index} value={lvl} className="bg-[var(--background)] text-[var(--text-primary)]">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                          {uniqueLevels.map((lvl) => (
+                            <button
+                              key={lvl}
+                              onClick={() => toggleLevelFilter(lvl)}
+                              className={`border rounded-lg p-2 text-sm transition-all ${
+                                levelFilters.includes(lvl)
+                                  ? "bg-blue-600 text-white border-blue-600 font-semibold"
+                                  : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                              }`}
+                            >
                               {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
-                            </option>
+                            </button>
                           ))}
-                        </select>
+                        </div>
                       </div>
 
                       {/* School Filter */}
@@ -387,7 +397,7 @@ export default function Home() {
                         className="border-2 rounded-lg p-3 w-full bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)] transition-colors hover:bg-[var(--tag-background)] font-medium"
                         onClick={() => {
                           setNameFilter("");
-                          setLevelFilter("");
+                          setLevelFilters([]);
                           setSchoolFilter("");
                           setCastingTimeFilter("");
                           setSpellListFilter("");
@@ -413,7 +423,7 @@ export default function Home() {
         </main>
         <div className="flex flex-col gap-4 w-full max-w-5xl">
           {/* Filter Summary Section */}
-          {(nameFilter || levelFilter || spellListFilter || ritualFilter ||
+          {(nameFilter || levelFilters.length > 0 || spellListFilter || ritualFilter ||
             concentrationFilter || schoolFilter || castingTimeFilter ||
             Object.values(componentsFilter).some(val => val !== 0)) && (
               <div className="bg-[var(--tag-background)] border border-[var(--card-border)] rounded-lg p-3 text-sm text-[var(--text-secondary)]">
@@ -431,13 +441,13 @@ export default function Home() {
                       </button>
                     </span>
                   )}
-                  {levelFilter && (
+                  {levelFilters.length > 0 && (
                     <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
-                      Level: {levelFilter}
+                      Levels: {levelFilters.join(", ")}
                       <button
-                        onClick={() => setLevelFilter("")}
+                        onClick={() => setLevelFilters([])}
                         className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                        aria-label="Clear level filter"
+                        aria-label="Clear level filters"
                       >
                         ×
                       </button>
@@ -531,7 +541,7 @@ export default function Home() {
                   <button
                     onClick={() => {
                       setNameFilter("");
-                      setLevelFilter("");
+                      setLevelFilters([]);
                       setSchoolFilter("");
                       setCastingTimeFilter("");
                       setSpellListFilter("");
