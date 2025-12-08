@@ -1,27 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --card-background: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(229, 231, 235, 0.8);
-  --card-shadow: rgba(0, 0, 0, 0.05);
-  --text-primary: #171717;
-  --text-secondary: #4b5563;
-  --text-tertiary: #6b7280;
-  --tag-background: rgba(243, 244, 246, 0.6);
+  /* Backgrounds - Warm cream/beige paper */
+  --background: #f5f1e8;
+  --background-secondary: #ebe6da;
+  --foreground: #2c2416;
+
+  /* Cards - Yellowed paper with transparency */
+  --card-background: rgba(250, 248, 243, 0.85);
+  --card-background-hover: rgba(250, 248, 243, 0.95);
+  --card-border: rgba(139, 109, 75, 0.3);
+  --card-border-accent: rgba(160, 120, 70, 0.5);
+
+  /* Shadows - Soft paper depth */
+  --card-shadow: rgba(107, 91, 65, 0.12);
+  --card-shadow-hover: rgba(107, 91, 65, 0.25);
+
+  /* Text - Aged ink tones */
+  --text-primary: #261800;
+  --text-secondary: #362815;
+  --text-tertiary: #4a0000;
+
+  /* Tags - Parchment variation */
+  --tag-background: rgba(235, 228, 210, 0.6);
+  --tag-border: rgba(139, 109, 75, 0.25);
+
+
+  /* Decorative elements */
+  --ornament-color: #8b6d4b;
+  --seal-color: #a94442;
+  --bookmark-ribbon: #8b5a3c;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card-background: rgba(31, 41, 55, 0.6);
-  --card-border: rgba(55, 65, 81, 0.6);
-  --card-shadow: rgba(0, 0, 0, 0.3);
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-tertiary: #9ca3af;
-  --tag-background: rgba(55, 65, 81, 0.5);
+  /* Backgrounds - Deep midnight blue-black */
+  --background: #0f1419;
+  --background-secondary: #1a1f2e;
+  --foreground: #e8d9c3;
+
+  /* Cards - Dark leather/aged vellum */
+  --card-background: rgba(42, 37, 32, 0.75);
+  --card-background-hover: rgba(42, 37, 32, 0.9);
+  --card-border: rgba(149, 117, 70, 0.3);
+  --card-border-accent: rgba(184, 134, 67, 0.45);
+
+  /* Shadows - Deep mystical shadows */
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --card-shadow-hover: rgba(0, 0, 0, 0.7);
+
+  /* Text - Moonlit parchment */
+  --text-primary: #e8d9c3;
+  --text-secondary: #c5b39a;
+  --text-tertiary: #9a8672;
+
+  /* Tags - Dark leather accent */
+  --tag-background: rgba(55, 48, 40, 0.6);
+  --tag-border: rgba(149, 117, 70, 0.3);
+
+  /* Watercolor accents - Mystical hues */
+  --watercolor-blue: rgba(82, 122, 163, 0.15);
+  --watercolor-purple: rgba(139, 107, 178, 0.2);
+  --watercolor-rust: rgba(191, 108, 57, 0.15);
+  --watercolor-sage: rgba(103, 133, 106, 0.15);
+  --watercolor-gold: rgba(184, 153, 89, 0.12);
+
+  /* Decorative elements */
+  --ornament-color: #b8863b;
+  --seal-color: #c74440;
+  --bookmark-ribbon: #8b5a3c;
 }
 
 body {
@@ -30,26 +76,171 @@ body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
   letter-spacing: -0.011em;
-  background-image: radial-gradient(circle at 1px 1px, var(--card-border) 1px, transparent 0);
-  background-size: 40px 40px;
+  position: relative;
+  min-height: 100vh;
+
+  /* Paper fiber texture - More pronounced */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 109, 75, 0.04) 2px,
+      rgba(139, 109, 75, 0.04) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 109, 75, 0.03) 2px,
+      rgba(139, 109, 75, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 3px,
+      rgba(139, 109, 75, 0.015) 3px,
+      rgba(139, 109, 75, 0.015) 6px
+    );
+}
+
+/* Watercolor wash overlay - More vibrant */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background:
+    radial-gradient(
+      ellipse 900px 700px at 15% 25%,
+      var(--watercolor-blue),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 700px 900px at 85% 75%,
+      var(--watercolor-purple),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 600px 600px at 50% 50%,
+      var(--watercolor-sage),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 400px 600px at 70% 30%,
+      var(--watercolor-gold),
+      transparent 65%
+    );
+  mix-blend-mode: multiply;
+  animation: subtle-shift 30s ease-in-out infinite;
+}
+
+@keyframes subtle-shift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(10px, -10px) scale(1.02);
+  }
+}
+
+.dark body::before {
+  opacity: 0.25;
+  mix-blend-mode: screen;
+}
+
+/* Aging stains and blemishes - More pronounced */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  background:
+    radial-gradient(circle 200px at 12% 88%, var(--watercolor-rust), transparent 60%),
+    radial-gradient(circle 150px at 88% 12%, var(--watercolor-gold), transparent 55%),
+    radial-gradient(circle 120px at 45% 92%, rgba(139, 109, 75, 0.2), transparent 50%),
+    radial-gradient(circle 180px at 25% 15%, rgba(139, 109, 75, 0.15), transparent 55%),
+    radial-gradient(circle 100px at 75% 60%, rgba(178, 113, 77, 0.12), transparent 50%),
+    radial-gradient(circle 90px at 30% 45%, rgba(184, 153, 89, 0.1), transparent 50%);
+}
+
+.dark body::after {
+  opacity: 0.1;
 }
 
 #spell-card {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: -0.01em;
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
   background: var(--card-background);
-  border: 1px solid var(--card-border);
+  border: 2px solid var(--card-border);
+  position: relative;
+
+  /* Paper depth shadow - More pronounced */
+  box-shadow:
+    0 4px 12px var(--card-shadow),
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4);
+
+  /* Watercolor tint overlay - More vibrant and complex */
+  background-image:
+    radial-gradient(circle 400px at 20% 30%, var(--watercolor-blue), transparent 50%),
+    radial-gradient(circle 350px at 80% 70%, var(--watercolor-purple), transparent 50%),
+    radial-gradient(circle 250px at 50% 50%, var(--watercolor-sage), transparent 60%),
+    radial-gradient(circle 200px at 15% 85%, var(--watercolor-rust), transparent 65%);
+  background-blend-mode: multiply;
+
+  /* Paper grain texture */
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 200px 200px;
 }
 
+/* Page lift hover effect - More dramatic */
 #spell-card:hover {
-  box-shadow: 0 8px 32px var(--card-shadow);
+  transform: translateY(-8px) rotate(0.5deg);
+  background: var(--card-background-hover);
+  box-shadow:
+    0 20px 48px var(--card-shadow-hover),
+    0 8px 16px var(--card-shadow),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 0 2px 5px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.1, 0, 0.1, 1);
+}
+
+
+#spell-card:hover::before {
+  opacity: 0.8;
+  border-width: 0 36px 36px 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.025em;
+}
+
+/* Spell card headings - Decorative serif */
+#spell-card h3 {
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px var(--card-shadow);
+}
+
+/* Filter labels - Book-like serif */
+label {
+  font-family: var(--font-crimson), serif;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+/* Add subtle ink-fade effect in dark mode */
+.dark #spell-card p {
+  opacity: 0.95;
+  text-shadow: 0 0 1px rgba(232, 217, 195, 0.1);
 }
 
 .font-medium {
@@ -64,6 +255,212 @@ h1, h2, h3, h4, h5, h6 {
 
 input, button, select {
   font-variant-numeric: tabular-nums;
+}
+
+/* Navigation bar - Book spine aesthetic */
+nav {
+  /* Translucent + blur */
+  background: rgba(245, 241, 232, 0.95); /* light mode - more opaque */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border-bottom: 4px solid var(--card-border-accent);
+  box-shadow:
+    0 6px 12px var(--card-shadow),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  }
+
+.dark nav {
+  background: rgba(15, 20, 25, 0.95); /* dark mode glass - more opaque */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Search input - Inkwell aesthetic */
+input[type="text"] {
+  background: var(--card-background);
+  border: 2px solid var(--card-border);
+  box-shadow: inset 0 2px 4px var(--card-shadow);
+  background-image:
+    radial-gradient(ellipse at bottom, rgba(0, 0, 0, 0.05), transparent 50%);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--card-border-accent);
+  box-shadow:
+    inset 0 2px 4px var(--card-shadow),
+    0 0 0 3px var(--watercolor-blue);
+}
+
+/* Button base styles - Wax seal aesthetic */
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Blue buttons (selected levels, inclusive mode) - Enhanced wax seal */
+.bg-blue-600 {
+  background: #5b84aa !important;
+  border-color: #5b84aa !important;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+    0 0 0 3px rgba(91, 132, 170, 0.3),
+    0 2px 8px rgba(91, 132, 170, 0.4);
+  transform: scale(1);
+  transition: all 0.2s ease;
+}
+
+.bg-blue-600:hover {
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.25),
+    0 0 0 3px rgba(91, 132, 170, 0.4),
+    0 4px 12px rgba(91, 132, 170, 0.5);
+}
+
+/* Purple buttons (exclusive mode) - Enhanced wax seal */
+.bg-purple-600 {
+  background: #8b6b9e !important;
+  border-color: #8b6b9e !important;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+    0 0 0 3px rgba(139, 107, 158, 0.3),
+    0 2px 8px rgba(139, 107, 158, 0.4);
+  transform: scale(1);
+  transition: all 0.2s ease;
+}
+
+.bg-purple-600:hover {
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.25),
+    0 0 0 3px rgba(139, 107, 158, 0.4),
+    0 4px 12px rgba(139, 107, 158, 0.5);
+}
+
+/* Green buttons (required state) - Enhanced wax seal */
+.bg-green-600 {
+  background: #86967a !important;
+  border-color: #86967a !important;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+    0 0 0 3px rgba(134, 150, 122, 0.3),
+    0 2px 8px rgba(134, 150, 122, 0.4);
+  transform: scale(1);
+  transition: all 0.2s ease;
+}
+
+.bg-green-600:hover {
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.25),
+    0 0 0 3px rgba(134, 150, 122, 0.4),
+    0 4px 12px rgba(134, 150, 122, 0.5);
+}
+
+/* Red buttons (excluded state) - Enhanced wax seal */
+.bg-red-600 {
+  background: var(--seal-color) !important;
+  border-color: var(--seal-color) !important;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.15),
+    0 0 0 3px rgba(169, 68, 66, 0.3),
+    0 2px 8px rgba(169, 68, 66, 0.4);
+  transform: scale(1);
+  transition: all 0.2s ease;
+}
+
+.bg-red-600:hover {
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+    0 0 0 3px rgba(169, 68, 66, 0.4),
+    0 4px 12px rgba(169, 68, 66, 0.5);
+}
+
+/* Ink ripple animation */
+@keyframes ink-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+button::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--watercolor-blue);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+button:active::after {
+  animation: ink-ripple 0.6s ease-out;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Reduce texture complexity */
+  body::before {
+    opacity: 0.15;
+  }
+
+  body::after {
+    display: none;
+  }
+
+  /* Simplify card decorations */
+  #spell-card::after {
+    display: none;
+  }
+
+  /* Lighter shadows */
+  #spell-card {
+    box-shadow: 0 2px 8px var(--card-shadow);
+  }
+
+  #spell-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px var(--card-shadow-hover);
+  }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  #spell-card:hover {
+    transform: none;
+  }
+
+  body::before,
+  body::after {
+    animation: none;
+  }
 }
 
 /* Add smooth transitions for theme changes */

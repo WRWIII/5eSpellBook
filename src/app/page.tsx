@@ -227,21 +227,19 @@ export default function Home() {
                             <div className="flex gap-2">
                               <button
                                 onClick={() => setClassFilterMode("inclusive")}
-                                className={`flex-1 border rounded-lg p-2 text-sm transition-colors ${
-                                  classFilterMode === "inclusive"
+                                className={`flex-1 border rounded-lg p-2 text-sm transition-colors ${classFilterMode === "inclusive"
                                     ? "bg-blue-600 text-white border-blue-600"
                                     : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                                }`}
+                                  }`}
                               >
                                 Inclusive
                               </button>
                               <button
                                 onClick={() => setClassFilterMode("exclusive")}
-                                className={`flex-1 border rounded-lg p-2 text-sm transition-colors ${
-                                  classFilterMode === "exclusive"
+                                className={`flex-1 border rounded-lg p-2 text-sm transition-colors ${classFilterMode === "exclusive"
                                     ? "bg-purple-600 text-white border-purple-600"
                                     : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                                }`}
+                                  }`}
                               >
                                 Exclusive
                               </button>
@@ -268,11 +266,10 @@ export default function Home() {
                             <button
                               key={lvl}
                               onClick={() => toggleLevelFilter(lvl)}
-                              className={`border rounded-lg p-2 text-sm transition-all ${
-                                levelFilters.includes(lvl)
+                              className={`border rounded-lg p-2 text-sm transition-all ${levelFilters.includes(lvl)
                                   ? "bg-blue-600 text-white border-blue-600 font-semibold"
                                   : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
-                              }`}
+                                }`}
                             >
                               {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
                             </button>
@@ -454,11 +451,10 @@ export default function Home() {
                     </span>
                   )}
                   {spellListFilter && (
-                    <span className={`px-2 py-1 rounded border flex items-center gap-1 ${
-                      classFilterMode === "exclusive"
+                    <span className={`px-2 py-1 rounded border flex items-center gap-1 ${classFilterMode === "exclusive"
                         ? "bg-purple-100 border-purple-400 dark:bg-purple-900/30 dark:border-purple-600"
                         : "bg-blue-100 border-blue-400 dark:bg-blue-900/30 dark:border-blue-600"
-                    }`}>
+                      }`}>
                       {classFilterMode === "exclusive" ? "🔒" : "📖"} {spellListFilter} ({classFilterMode})
                       <button
                         onClick={() => setSpellListFilter("")}
@@ -564,11 +560,21 @@ export default function Home() {
             )}
           {filteredSpells.map((spell, index) => (
             <motion.div
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: 'tween' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                opacity: { duration: 0.3, delay: index * 0.05 },
+                y: { type: 'spring', stiffness: 100, damping: 15, delay: index * 0.05 }
+              }}
+              whileHover={{
+                y: -12,
+                rotateZ: 0.1,
+                transition: { type: 'spring', stiffness: 350, damping: 18 }
+              }}
               key={index}
-              className="relative border border-[var(--card-border)] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-[var(--card-background)] backdrop-blur-md"
+              className="relative border border-[var(--card-border)] rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-[var(--card-background)]"
               id="spell-card"
+              style={{ perspective: '1000px' }}
             >
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)] tracking-tight">
