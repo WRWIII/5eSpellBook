@@ -6,6 +6,7 @@ import { spells } from "@/data/all_spells";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { SunIcon } from "@heroicons/react/24/solid";
 import { MoonIcon } from "@heroicons/react/24/solid";
+import { FormattedDescription } from "@/components/FormattedDescription";
 
 export default function Home() {
   const { theme, setTheme } = useTheme();
@@ -593,8 +594,8 @@ export default function Home() {
                 <div><span className="font-medium"></span> </div>
               </div>
 
-              <div className="text-sm text-[var(--text-secondary)] mb-3">
-                <p>{spell.details.description}</p>
+              <div className="text-sm mb-3">
+                <FormattedDescription description={spell.details.description} />
               </div>
 
               <div className="flex flex-wrap gap-2 text-xs">

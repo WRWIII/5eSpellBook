@@ -468,3 +468,102 @@ button:active::after {
   transition: background-color 0.3s ease, border-color 0.3s ease,
     color 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* ========================================
+   Spell Description Formatting
+   ======================================== */
+
+/* Spell Description Container */
+.spell-description {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Bullet Lists - Parchment styling */
+.spell-bullet-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.75rem 0;
+}
+
+.spell-bullet-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.spell-bullet-list li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0.25rem;
+  color: var(--ornament-color);
+  font-weight: bold;
+}
+
+.spell-bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* Table Wrapper - Horizontal scroll for mobile */
+.spell-table-wrapper {
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  border-radius: 0.375rem;
+}
+
+/* Tables - Parchment/manuscript styling */
+.spell-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  background: var(--tag-background);
+  border: 1px solid var(--card-border);
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.spell-table th,
+.spell-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.spell-table th {
+  background: rgba(139, 109, 75, 0.15);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-crimson), serif;
+  letter-spacing: 0.01em;
+  border-bottom: 2px solid var(--card-border-accent);
+}
+
+.spell-table tr:last-child td {
+  border-bottom: none;
+}
+
+.spell-table tr:nth-child(even) {
+  background: rgba(139, 109, 75, 0.05);
+}
+
+/* Dark mode table adjustments */
+.dark .spell-table th {
+  background: rgba(149, 117, 70, 0.2);
+}
+
+.dark .spell-table tr:nth-child(even) {
+  background: rgba(149, 117, 70, 0.08);
+}
+
+/* Mobile responsiveness for tables */
+@media (max-width: 640px) {
+  .spell-table {
+    font-size: 0.75rem;
+  }
+
+  .spell-table th,
+  .spell-table td {
+    padding: 0.375rem 0.5rem;
+  }
+}
