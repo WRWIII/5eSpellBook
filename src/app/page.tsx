@@ -17,6 +17,8 @@ export default function Home() {
   const [classFilterMode, setClassFilterMode] = useState<"inclusive" | "exclusive">("inclusive");
   const [ritualFilter, setRitualFilter] = useState(0);
   const [concentrationFilter, setConcentrationFilter] = useState(0);
+  const [savingThrowFilter, setSavingThrowFilter] = useState(0);
+  const [attackRollFilter, setAttackRollFilter] = useState(0);
   const [schoolFilter, setSchoolFilter] = useState("");
   const [castingTimeFilter, setCastingTimeFilter] = useState("");
   const [componentsFilter, setComponentsFilter] = useState({
@@ -94,6 +96,16 @@ export default function Home() {
       if (concentrationFilter === 1 && !durationStr.includes("concentration")) concentrationMatches = false;
       if (concentrationFilter === -1 && durationStr.includes("concentration")) concentrationMatches = false;
 
+      const descStr = details.description.toLowerCase();
+
+      let savingThrowMatches = true;
+      if (savingThrowFilter === 1 && !descStr.includes("saving throw")) savingThrowMatches = false;
+      if (savingThrowFilter === -1 && descStr.includes("saving throw")) savingThrowMatches = false;
+
+      let attackRollMatches = true;
+      if (attackRollFilter === 1 && !descStr.includes("spell attack")) attackRollMatches = false;
+      if (attackRollFilter === -1 && descStr.includes("spell attack")) attackRollMatches = false;
+
       const schoolMatches =
         !schoolFilter ||
         details.school.toLowerCase().includes(schoolFilter.toLowerCase());
@@ -127,6 +139,8 @@ export default function Home() {
         spellListMatches &&
         ritualMatches &&
         concentrationMatches &&
+        savingThrowMatches &&
+        attackRollMatches &&
         schoolMatches &&
         castingTimeMatches &&
         componentsMatch
@@ -139,6 +153,8 @@ export default function Home() {
     classFilterMode,
     ritualFilter,
     concentrationFilter,
+    savingThrowFilter,
+    attackRollFilter,
     schoolFilter,
     castingTimeFilter,
     componentsFilter,
@@ -387,6 +403,50 @@ export default function Home() {
                               : "Any"}
                         </button>
                       </div>
+
+                      {/* Saving Throw Button */}
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">Saving Throw:</label>
+                        <button
+                          className={`border rounded-lg p-2 w-full text-sm transition-all ${savingThrowFilter === 1
+                            ? "bg-green-600 text-white border-green-600 font-semibold"
+                            : savingThrowFilter === -1
+                              ? "bg-red-600 text-white border-red-600 font-semibold"
+                              : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                            }`}
+                          onClick={() =>
+                            setSavingThrowFilter((prev) => (prev === 0 ? 1 : prev === 1 ? -1 : 0))
+                          }
+                        >
+                          {savingThrowFilter === 1
+                            ? "Required ✓"
+                            : savingThrowFilter === -1
+                              ? "Excluded ✗"
+                              : "Any"}
+                        </button>
+                      </div>
+
+                      {/* Attack Roll Button */}
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-[var(--text-primary)] tracking-tight">Attack Roll:</label>
+                        <button
+                          className={`border rounded-lg p-2 w-full text-sm transition-all ${attackRollFilter === 1
+                            ? "bg-green-600 text-white border-green-600 font-semibold"
+                            : attackRollFilter === -1
+                              ? "bg-red-600 text-white border-red-600 font-semibold"
+                              : "bg-[var(--background)] text-[var(--text-primary)] border-[var(--card-border)]"
+                            }`}
+                          onClick={() =>
+                            setAttackRollFilter((prev) => (prev === 0 ? 1 : prev === 1 ? -1 : 0))
+                          }
+                        >
+                          {attackRollFilter === 1
+                            ? "Required ✓"
+                            : attackRollFilter === -1
+                              ? "Excluded ✗"
+                              : "Any"}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Clear Filters Button */}
@@ -402,6 +462,8 @@ export default function Home() {
                           setClassFilterMode("inclusive");
                           setConcentrationFilter(0);
                           setRitualFilter(0);
+                          setSavingThrowFilter(0);
+                          setAttackRollFilter(0);
                           setComponentsFilter({
                             V: 0,
                             S: 0,
@@ -422,7 +484,7 @@ export default function Home() {
         <div className="flex flex-col gap-4 w-full max-w-5xl">
           {/* Filter Summary Section */}
           {(nameFilter || levelFilters.length > 0 || spellListFilter || ritualFilter ||
-            concentrationFilter || schoolFilter || castingTimeFilter ||
+            concentrationFilter || savingThrowFilter || attackRollFilter || schoolFilter || castingTimeFilter ||
             Object.values(componentsFilter).some(val => val !== 0)) && (
               <div className="bg-[var(--tag-background)] border border-[var(--card-border)] rounded-lg p-3 text-sm text-[var(--text-secondary)]">
                 <div className="flex flex-wrap gap-2 items-center">
@@ -490,6 +552,30 @@ export default function Home() {
                       </button>
                     </span>
                   )}
+                  {savingThrowFilter !== 0 && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Saving Throw: {savingThrowFilter === 1 ? "Included" : "Excluded"}
+                      <button
+                        onClick={() => setSavingThrowFilter(0)}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear saving throw filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {attackRollFilter !== 0 && (
+                    <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
+                      Attack Roll: {attackRollFilter === 1 ? "Included" : "Excluded"}
+                      <button
+                        onClick={() => setAttackRollFilter(0)}
+                        className="ml-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                        aria-label="Clear attack roll filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
                   {schoolFilter && (
                     <span className="bg-[var(--background)] px-2 py-1 rounded border border-[var(--card-border)] flex items-center gap-1">
                       School: {schoolFilter}
@@ -545,6 +631,8 @@ export default function Home() {
                       setClassFilterMode("inclusive");
                       setConcentrationFilter(0);
                       setRitualFilter(0);
+                      setSavingThrowFilter(0);
+                      setAttackRollFilter(0);
                       setComponentsFilter({
                         V: 0,
                         S: 0,
